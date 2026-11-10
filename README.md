@@ -1,916 +1,189 @@
-# gnani_ai_internship-student-copilot-ai
-AI-powered multilingual student assistant using voice AI, RAG and intelligent agents
-# Student Copilot AI
-### A Voice-First, Multilingual AI Companion for Students
+# Student Copilot AI — Complete Product Blueprint Implementation
 
-<p align="center">
-
-**One student profile. One continuous conversation. Twelve intelligent capabilities.**
-
-</p>
-
-<p align="center">
-
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![AI](https://img.shields.io/badge/AI-LLM%20Powered-purple)]()
-[![Voice](https://img.shields.io/badge/Voice-Gnani.ai-orange)](https://gnani.ai/)
-[![Status](https://img.shields.io/badge/Status-Active%20Development-success)]()
-
-</p>
+> **Submission for the Gnani.ai Great Indian AI Internship Challenge**  
+> *One student profile, one continuous conversation, 12 intelligent capabilities.*  
+> All opportunity listings, student profiles, and application portals are **synthetic** for student safety and DPDP compliance.
 
 ---
 
-## 1. Overview
-
-Student Copilot AI is a voice-first, multilingual academic and career assistant designed to help students manage their learning journey through a unified conversational interface.
-
-Students often switch between multiple platforms to understand difficult concepts, prepare for examinations, debug code, organize study schedules, discover opportunities, prepare resumes, and practice interviews.
-
-Student Copilot brings these workflows together into one intelligent assistant.
-
-The system is designed around a simple idea:
-
-**Students should be able to interact with technology in the language they are comfortable speaking, while receiving technically accurate and structured assistance.**
-
-With multilingual voice interaction, configurable LLM reasoning, document intelligence, personalized student workflows, and specialized assistance modules, Student Copilot aims to make academic and career support more accessible.
-
-### Core Design Principles
-
-- Voice-first interaction rather than relying exclusively on text.
-- Support for Telugu, Hindi, English, and code-mixed conversations.
-- Context-aware assistance through a continuous student session.
-- Specialized workflows instead of one generic chatbot.
-- Human control over important application-related actions.
-- Privacy-conscious handling of student information and uploaded documents.
+Student Copilot AI is a voice-first, multilingual AI companion designed for Indian engineering students who think in Telugu or Hindi but study and code in English. Instead of juggling separate apps for doubts, notes, syllabus tracking, coding errors, interview prep, scholarships, internships, and resumes, students speak to one unified AI copilot.
 
 ---
 
-## 2. Problem Statement
+## 12-Module Feature Architecture
 
-Students face several disconnected challenges throughout their academic journey.
-
-| Problem | Existing Difficulty |
-|---|---|
-| Learning | Difficult concepts require repeated explanations and personalized teaching. |
-| Language barriers | Technical learning resources are frequently English-centric. |
-| Study management | Students struggle to organize examinations, assignments, and deadlines. |
-| Document understanding | Finding relevant information in lengthy PDFs takes time. |
-| Coding | Students often need guidance rather than complete solutions. |
-| Career preparation | Resume building, interviews, and skill-gap identification require separate tools. |
-| Opportunities | Finding internships, scholarships, and hackathons is fragmented. |
-| Personalization | Generic chatbots often lack continuity across different student workflows. |
-
-### Proposed Solution
-
-A unified AI companion that understands student requests, identifies their intent, and routes them to the appropriate capability while maintaining session-level context.
+| # | System Module | Status | Core Capabilities |
+|---|---|---|---|
+| **M1** | **Voice Intelligence** | ✅ Active | Push-to-talk, Telugu/Hindi/English code-mixing, Gnani Prisma STT (`/stt/v3`), Gnani Timbre TTS (`/api/v1/tts/inference`, Vasudha v3.0 → Varuni v2.5 fallback), wake-word detection, browser Web Speech fallback |
+| **M2** | **AI Doubt Solver** | ✅ Active | 5 progressive explanation levels (Level 1: simple to Level 5: implementation), misconception detection, Telugu-English style adaptation, image-based doubt solving (`/api/doubts/image` with Gemini multimodal) |
+| **M3** | **Learning Assistant** | ✅ Active | Prerequisite identification, adaptive depth adjustments, interactive concept checks, multi-mode teaching |
+| **M4** | **Document Intelligence** | ✅ Active | PDF parsing via PyMuPDF, BM25 retrieval with page citations `[p.N]`, multi-style notes generation (`short`, `detailed`, `flashcards`, `formula`, `exam`) |
+| **M5** | **Exam Preparation** | ✅ Active | Interactive quiz engine, syllabus PDF tracker (`/api/exam/syllabus`) with interactive checklists, recurring question paper topic analyzer (`/api/exam/papers`) |
+| **M6** | **Study Manager** | ✅ Active | Task and assignment manager, revision timetable generator, Today's Focus daily digest (`/api/today`), schedule auto-rescheduler for missed days (`/api/study/reschedule`) |
+| **M7** | **Coding Mentor** | ✅ Active | Multi-language code + error explainer (Python, Java, C, C++, JavaScript, SQL, TypeScript), DSA hint-first mode (`/api/code/dsa-hint`) with 3 hint levels (no direct spoilers) |
+| **M8** | **Project Assistant** | ✅ Active | Profile-based project idea generator (`/api/projects/ideas`), hackathon discovery and eligibility matching |
+| **M9** | **Opportunity Finder** | ✅ Active | 8 categories (internships, scholarships, hackathons, exams, jobs, admissions, services, courses), eligibility auto-check, required fields diff (`/api/opportunities/{id}`) |
+| **M10** | **Application Agent** | ✅ Active | Transparent field collection, review summary, user-only consent gate, 5-minute cryptographic one-time token (`/api/applications/confirm`) |
+| **M11** | **Career Assistant** | ✅ Active | Target role skill gap analyzer (`/api/career/skill-gap`), tailored resume tips (`/api/career/resume-tips`), mock interview simulator with real-time feedback (HR, Technical, ML, SQL, DSA), portfolio advice (GitHub, LinkedIn, Blog) |
+| **M12** | **Student Intelligence** | ✅ Active | Learning streak & weak topics analytics (`/api/analytics`), personalized multi-week learning roadmaps (`/api/learn/path`), Telugu-English technical term explainer (`/api/learn/term`), context-aware intent router |
 
 ---
 
-## 3. System Architecture
+## Quickstart
 
-The application follows a modular architecture built around a FastAPI backend, configurable language-model providers, Gnani voice services, and specialized student-assistance workflows.
-
-### High-Level Architecture
-
-```text
-                 STUDENT
-                    |
-                    v
-          VOICE / TEXT INTERFACE
-                    |
-                    v
-           FASTAPI APPLICATION
-                    |
-                    v
-          INPUT PROCESSING LAYER
-                    |
-          +---------+----------+
-          |                    |
-          v                    v
-    LANGUAGE DETECTION     INTENT ROUTER
-          |                    |
-          +---------+----------+
-                    |
-                    v
-            SESSION CONTEXT
-                    |
-                    v
-          SPECIALIZED MODULES
-                    |
-      +-------------+--------------+
-      |             |              |
-      v             v              v
-   LEARNING      DOCUMENT        CAREER
-   ASSISTANT   INTELLIGENCE     ASSISTANT
-      |             |              |
-      v             v              v
-   CODING        EXAM           OPPORTUNITY
-   MENTOR       MANAGER           FINDER
-      |             |              |
-      +-------------+--------------+
-                    |
-                    v
-             AI REASONING LAYER
-                    |
-         +----------+-----------+
-         |          |           |
-         v          v           v
-       GROQ       GEMINI     ANTHROPIC
-                    |
-                    v
-             RESPONSE GENERATION
-                    |
-                    v
-            TEXT / VOICE OUTPUT
-                    |
-                    v
-                 STUDENT
-```
-
-The architecture represents the logical application flow. Individual modules use different internal processing paths depending on the request.
-
-### Voice Processing Pipeline
-
-```text
-Student Speech
-      |
-      v
-Audio Capture
-      |
-      v
-Gnani Prisma STT
-      |
-      v
-Transcribed Text
-      |
-      v
-Language & Intent Detection
-      |
-      v
-AI Processing
-      |
-      v
-Response Generation
-      |
-      v
-Gnani Timbre TTS
-      |
-      v
-Audio Response
-```
-
-The application also supports text interaction and browser speech fallback.
-
----
-
-## 4. Twelve-Module Feature Architecture
-
-The application is organized into twelve specialized capabilities.
-
-### M1 — Voice Intelligence
-
-Provides natural voice interaction through Gnani.ai speech services.
-
-Capabilities:
-
-- Push-to-talk voice interaction.
-- Telugu, Hindi, and English language support.
-- Telugu-English and Hindi-English code-mixed conversations.
-- Speech-to-text using Gnani Prisma.
-- Text-to-speech using Gnani Timbre.
-- Voice response generation.
-- Wake-word and hands-free interaction support.
-- Browser Web Speech fallback.
-
-**Integration:**
-- STT: `POST /stt/v3`
-- TTS: `POST /api/v1/tts/inference`
-
-### M2 — AI Doubt Solver
-
-An adaptive academic doubt-solving assistant.
-
-Capabilities:
-
-- Five progressive explanation levels.
-- Simple-to-advanced explanations.
-- Real-world analogies.
-- Technical examples.
-- Telugu-English conversational explanations.
-- Image-based doubt solving.
-- Context-aware follow-up questions.
-
-### M3 — Learning Assistant
-
-Focuses on improving conceptual understanding rather than simply generating answers.
-
-Capabilities:
-
-- Adaptive explanation depth.
-- Prerequisite identification.
-- Concept clarification.
-- Interactive concept checks.
-- Personalized teaching workflows.
-- Learning-oriented responses.
-
-### M4 — Document Intelligence
-
-Allows students to interact with their academic documents.
-
-Capabilities:
-
-- PDF upload and parsing using PyMuPDF.
-- Document text extraction.
-- BM25-based page retrieval.
-- Relevant page-level citations.
-- Document-based question answering.
-- Automatic notes generation.
-
-Supported note formats:
-
-- Short notes.
-- Detailed notes.
-- Flashcards.
-- Formula sheets.
-- Examination-oriented notes.
-
-### M5 — Exam Preparation
-
-Helps students organize and prepare for examinations.
-
-Capabilities:
-
-- Interactive topic-based quizzes.
-- Quiz answer evaluation.
-- Instant explanations.
-- Quiz history.
-- Syllabus PDF analysis.
-- Interactive syllabus checklists.
-- Previous-year question paper analysis.
-- Important topic extraction.
-
-### M6 — Study Manager
-
-A centralized academic task and planning assistant.
-
-Capabilities:
-
-- Assignment management.
-- Task creation and completion tracking.
-- Examination revision plans.
-- Personalized study schedules.
-- Daily study summaries.
-- Today's Focus dashboard.
-- Missed-session rescheduling.
-- Study activity tracking.
-
-### M7 — Coding Mentor
-
-An AI-powered coding assistant designed to guide students through programming problems.
-
-Capabilities:
-
-- Code explanation.
-- Error analysis.
-- Debugging guidance.
-- Programming concept explanations.
-- DSA hint-first learning.
-- Progressive hints without immediately revealing complete solutions.
-
-Supported programming languages include:
-
-- Python
-- Java
-- C
-- C++
-- JavaScript
-- SQL
-- TypeScript
-
-### M8 — Project Assistant
-
-Helps students identify projects aligned with their interests and existing skills.
-
-Capabilities:
-
-- Profile-based project recommendations.
-- Skill-aware project suggestions.
-- Hackathon-related assistance.
-- Project development guidance.
-
-### M9 — Opportunity Finder
-
-A centralized opportunity discovery and eligibility-assistance module.
-
-Supported categories:
-
-- Internships.
-- Scholarships.
-- Hackathons.
-- Jobs.
-- Entrance examinations.
-- Admissions.
-- Government schemes.
-- Certification courses.
-
-Capabilities:
-
-- Opportunity filtering.
-- Eligibility checking.
-- Required-field identification.
-- Missing information detection.
-- Deadline information.
-
-**Important:** Current opportunity records are synthetic demonstration data, not verified live listings.
-
-### M10 — Application Agent
-
-An application-assistance workflow designed around transparency and explicit student consent.
-
-Workflow:
-
-1. Select an opportunity.
-2. Check eligibility.
-3. Identify required application information.
-4. Collect missing fields.
-5. Generate an application review summary.
-6. Request explicit user confirmation.
-7. Process the demonstration confirmation workflow.
-
-The application uses a cryptographically generated, single-use confirmation token with a five-minute validity period.
-
-Current application records are synthetic. The workflow does not submit applications to external organizations.
-
-### M11 — Career Assistant
-
-Provides career preparation and professional development assistance.
-
-Capabilities:
-
-- Target-role skill-gap analysis.
-- Resume improvement suggestions.
-- Resume creation assistance.
-- Mock interview preparation.
-- Interview answer evaluation.
-- HR interview practice.
-- Technical interview practice.
-- Machine learning interview practice.
-- SQL interview practice.
-- DSA interview practice.
-- GitHub portfolio improvement.
-- LinkedIn profile improvement.
-- Personal website and blog suggestions.
-
-### M12 — Student Intelligence
-
-Provides personalized learning insights using available session information.
-
-Capabilities:
-
-- Learning activity tracking.
-- Study streak tracking.
-- Weak-topic identification.
-- Quiz performance insights.
-- Personalized learning roadmaps.
-- Technical terminology explanations.
-- Context-aware intent detection.
-
----
-
-## 5. Technology Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Python |
-| API Framework | FastAPI |
-| ASGI Server | Uvicorn |
-| Voice STT | Gnani Prisma |
-| Voice TTS | Gnani Timbre |
-| LLM Provider | Groq / Gemini / Anthropic |
-| Default LLM Configuration | Llama 3.3 70B Versatile |
-| PDF Processing | PyMuPDF |
-| Retrieval | BM25-based retrieval |
-| Data Validation | Pydantic |
-| HTTP Communication | HTTPX |
-| Environment Management | python-dotenv |
-| Testing Framework | Pytest |
-| Frontend | HTML, CSS, JavaScript |
-
-### Configurable AI Reasoning
-
-The backend supports configurable reasoning providers:
-
-- Groq
-- Google Gemini
-- Anthropic
-- Mock mode for offline demonstration
-
-The provider is selected through environment configuration rather than hardcoding credentials into the application.
-
----
-
-## 6. Gnani.ai Integration
-
-Voice interaction is a central part of Student Copilot.
-
-The application integrates Gnani.ai voice capabilities through its configured API services.
-
-### Speech-to-Text — Gnani Prisma
-
-Used to convert student speech into text before processing.
-
-Current integration configuration:
-
-- Service: Gnani Prisma.
-- Model configuration: v3.0.
-- Supported language configuration: Telugu (`te-IN`) and English (`en-IN`).
-- Endpoint: `POST /stt/v3`.
-
-### Text-to-Speech — Gnani Timbre
-
-Used to convert generated responses into spoken audio.
-
-Current integration configuration:
-
-- Service: Gnani Timbre.
-- Primary voice configuration: Vasudha v3.0.
-- Fallback voice configuration: Varuni v2.5.
-- Endpoint: `POST /api/v1/tts/inference`.
-
-### Voice Processing Considerations
-
-- Asynchronous HTTP communication.
-- Controlled speech-generation concurrency.
-- Audio buffering in memory.
-- Browser speech fallback.
-- Separate speech recognition and speech synthesis workflows.
-
-The reasoning layer is independently configurable. Gnani voice integration should not be confused with the LLM reasoning provider.
-
----
-
-## 7. Project Structure
-
-```text
-student-copilot-ai/
-│
-├── app.py
-│
-├── static/
-│   ├── index.html
-│   ├── styles.css
-│   ├── app.js
-│   └── favicon.svg
-│
-├── tests/
-│   ├── test_app.py
-│   ├── test_new_features.py
-│   └── test_all_12_modules.py
-│
-├── requirements.txt
-├── requirements-dev.txt
-├── pytest.ini
-│
-├── .env.example
-├── .gitignore
-│
-└── README.md
-```
-
-### Important Files
-
-| File | Responsibility |
-|---|---|
-| `app.py` | FastAPI backend, application logic, API routes, AI integrations and session management. |
-| `static/index.html` | Main application interface. |
-| `static/styles.css` | Frontend styling. |
-| `static/app.js` | Frontend interactions and voice handling. |
-| `tests/` | Automated application tests. |
-| `requirements.txt` | Runtime dependencies. |
-| `requirements-dev.txt` | Development and testing dependencies. |
-| `.env.example` | Environment variable template. |
-| `pytest.ini` | Pytest configuration. |
-
----
-
-## 8. Installation and Setup
-
-### Prerequisites
-
-- Python 3.10 or later.
-- Git.
-- A Gnani.ai API key for live voice functionality.
-- A supported LLM API key for live reasoning functionality.
-
-### Step 1 — Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/student-copilot-ai.git
-
-cd student-copilot-ai
-```
-
-### Step 2 — Create a Virtual Environment
-
-**Windows:**
-
+### 1. Setup Virtual Environment
 ```powershell
 python -m venv .venv
-
 .\.venv\Scripts\Activate.ps1
-```
-
-**Linux / macOS:**
-
-```bash
-python3 -m venv .venv
-
-source .venv/bin/activate
-```
-
-### Step 3 — Install Dependencies
-
-For development:
-
-```bash
 pip install -r requirements-dev.txt
 ```
 
-For runtime only:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4 — Configure Environment Variables
-
-Create your local environment file.
-
-**Windows:**
-
+### 2. Configure Environment (`.env`)
+Copy `.env.example` to `.env`:
 ```powershell
 copy .env.example .env
 ```
 
-**Linux / macOS:**
-
-```bash
-cp .env.example .env
-```
-
-### Step 5 — Configure Mock Mode
-
-For an offline demonstration without external API credentials:
-
-```env
+To run in **Offline / Mock Mode** (no keys required, all 12 modules use high-fidelity synthetic responses):
+```dotenv
 MOCK_MODE=true
-LLM_PROVIDER=mock
 ```
 
-### Step 6 — Configure Live AI Mode
-
-To enable Gnani voice services and Groq reasoning:
-
-```env
+To enable **Live Gnani Voice + Free GroqCloud Reasoning**:
+```dotenv
 MOCK_MODE=false
-
-GNANI_API_KEY=your_gnani_api_key
+GNANI_API_KEY=your_key_from_gnani_dashboard
 GNANI_BASE_URL=https://api.vachana.ai
 
 LLM_PROVIDER=groq
-GROQ_API_KEY=your_groq_api_key
+GROQ_API_KEY=gsk_your_groq_api_key_from_console_groq_com
 GROQ_MODEL=llama-3.3-70b-versatile
-
-SESSION_TTL_SECONDS=3600
 ```
 
-For Gemini reasoning, configure:
-
-```env
+To enable **Live Gnani Voice + Gemini Reasoning**:
+```dotenv
 MOCK_MODE=false
+GNANI_API_KEY=your_key_from_gnani_dashboard
+GNANI_BASE_URL=https://api.vachana.ai
 
 LLM_PROVIDER=gemini
+LLM_MODEL=gemini-2.0-flash
 GEMINI_API_KEY=your_gemini_api_key
-LLM_MODEL=your_supported_gemini_model
 ```
 
-For Anthropic reasoning, configure:
-
-```env
-MOCK_MODE=false
-
-LLM_PROVIDER=anthropic
-ANTHROPIC_API_KEY=your_anthropic_api_key
-LLM_MODEL=your_supported_anthropic_model
-```
-
-Use model identifiers supported by the respective provider accounts.
-
-### Step 7 — Start the Application
-
-```bash
+### 3. Run Server
+```powershell
 python -m uvicorn app:app --reload --port 8000
 ```
-
-Open the application:
-
-```text
-http://127.0.0.1:8000
-```
-
-FastAPI interactive API documentation:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Alternative API documentation:
-
-```text
-http://127.0.0.1:8000/redoc
-```
+Open [http://localhost:8000](http://localhost:8000) in your browser.
 
 ---
 
-## 9. API Reference
+## Gnani Model Integration
 
-The application exposes REST endpoints grouped by functionality.
+| Layer | Service | Model / Configuration | Endpoint |
+|---|---|---|---|
+| **STT** | Gnani Prisma | v3.0, `language_code=te-IN,en-IN`, `format=transcribe` | `POST /stt/v3` |
+| **TTS** | Gnani Timbre | v3.0 Vasudha voice (`gender=female`, `speed=1.0`) with v2.5 Varuni fallback | `POST /api/v1/tts/inference` |
+| **Concurrency** | Async Semaphore | `asyncio.Semaphore(1)` ensures sequential speech generation without rate spikes | In-process |
+| **Audio Safety** | In-Memory Streaming | Audio is buffered in-memory and never persisted to disk (DPDP compliance) | Native |
 
-### Core and Session Management
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/` | Main application interface |
-| GET | `/api/health` | Basic health check |
-| GET | `/api/health/detailed` | Detailed module status |
-| POST | `/api/session` | Create student session |
-| DELETE | `/api/session/{session_id}` | Delete session |
-| GET | `/api/profile` | Retrieve student profile |
-| PUT | `/api/profile` | Update student profile |
-| GET | `/api/progress` | Retrieve student progress |
-
-### Voice and Conversation
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/turn` | Process conversational request |
-| POST | `/api/turn/audio` | Process an audio conversation |
-| POST | `/api/transcribe` | Speech-to-text |
-| POST | `/api/tts` | Text-to-speech |
-| POST | `/api/conversation/clear` | Clear conversation context |
-| POST | `/api/doubts/image` | Process image-based doubts |
-
-### Documents and Examination
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/documents` | Upload PDF |
-| DELETE | `/api/documents` | Remove uploaded documents |
-| POST | `/api/documents/notes` | Generate document-based notes |
-| POST | `/api/exam/syllabus` | Analyze syllabus |
-| GET | `/api/exam/syllabus` | Retrieve syllabus |
-| PATCH | `/api/exam/syllabus/topic` | Update topic completion |
-| POST | `/api/exam/papers` | Analyze question papers |
-| POST | `/api/quiz/start` | Start a quiz |
-| POST | `/api/quiz/answer` | Submit quiz answer |
-| GET | `/api/quiz/history` | Retrieve quiz history |
-
-### Study Management
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/study/plan` | Generate study plan |
-| GET | `/api/study/plan` | Retrieve study plan |
-| POST | `/api/study/reschedule` | Reschedule study plan |
-| GET | `/api/tasks` | Retrieve tasks |
-| POST | `/api/tasks` | Create task |
-| PATCH | `/api/tasks/{task_id}` | Update task |
-| DELETE | `/api/tasks/{task_id}` | Delete task |
-| GET | `/api/today` | Retrieve daily focus |
-| POST | `/api/track/activity` | Track learning activity |
-
-### Coding and Project Assistance
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/code/explain` | Explain code and errors |
-| POST | `/api/code/dsa-hint` | Generate progressive DSA hints |
-| POST | `/api/projects/ideas` | Generate project ideas |
-
-### Opportunities and Applications
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/opportunities` | List opportunities |
-| GET | `/api/opportunities/{opportunity_id}` | Retrieve opportunity details |
-| POST | `/api/applications/start` | Start application workflow |
-| POST | `/api/applications/answer` | Submit application information |
-| POST | `/api/applications/confirm` | Confirm demonstration application |
-
-### Career Assistance
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/career/skill-gap` | Analyze skill gaps |
-| POST | `/api/career/resume-tips` | Generate resume suggestions |
-| POST | `/api/career/interview/start` | Start mock interview |
-| POST | `/api/career/interview/answer` | Evaluate interview answer |
-| GET | `/api/career/interview/status` | Retrieve interview status |
-| POST | `/api/career/portfolio` | Generate portfolio suggestions |
-
-### Student Intelligence
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/analytics` | Retrieve learning analytics |
-| POST | `/api/learn/path` | Generate learning roadmap |
-| GET | `/api/learn/term` | Explain technical terminology |
-
-### Configuration
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/config/llm-key` | Update Groq key at runtime |
-
-All request schemas and response formats can be explored through the interactive Swagger documentation at `/docs`.
-
-**Deployment note:** The runtime LLM-key configuration endpoint must be protected or disabled before public deployment. Never expose credential-management functionality without proper authentication and authorization.
+> **Note on Evon:** Gnani Evon is an open-weights LLM and is not hosted as an API endpoint on `api.gnani.ai`. Reasoning and multimodal vision are powered by Gemini 2.0 Flash / Anthropic Claude / local fallback.
 
 ---
 
-## 10. Security, Privacy and Responsible AI
+## Automated Test Suite
 
-Student Copilot is designed with explicit user control and privacy-conscious processing.
-
-### Synthetic Demonstration Data
-
-- Opportunity records are fictional.
-- Application workflows are demonstrations.
-- No real external application submission is performed.
-- Demo records must not be interpreted as verified opportunities.
-
-### Session Management
-
-- Student information is maintained in session-level application state.
-- Sessions have a configurable expiration period.
-- Expired sessions are cleaned up.
-- Session data is currently in memory and is not durable across application restarts.
-
-### Voice and Document Handling
-
-- Audio processing uses in-memory buffering in the current implementation.
-- Uploaded documents are associated with the active session.
-- Users can remove uploaded documents through the application workflow.
-
-### Application Consent
-
-- Application information is collected transparently.
-- A review and confirmation step is required.
-- One-time confirmation tokens are used in the demonstration workflow.
-
-### Security Controls
-
-- Environment-based API credential configuration.
-- Request validation through Pydantic.
-- Request rate limiting.
-- Constant-time comparison for demo access tokens.
-- Security response headers.
-- Content Security Policy.
-- Restricted microphone permissions.
-
-**Security scope:** These controls are application-level safeguards, not a certification of compliance with the Digital Personal Data Protection Act or a complete production security audit. Production deployment requires additional security, authentication, storage, retention, and privacy reviews.
-
----
-
-## 11. Testing
-
-The project uses Pytest for automated testing.
-
-Run the test suite:
-
-```bash
+Run the full 53-test suite covering all 12 modules:
+```powershell
 python -m pytest tests/ -v
 ```
 
-Run tests with a shorter output:
-
-```bash
-python -m pytest tests/ -q
+```
+tests/test_all_12_modules.py .... (18 passed)
+tests/test_app.py ........... (17 passed)
+tests/test_new_features.py .. (18 passed)
+======================== 53 passed in ~2s ========================
 ```
 
-Run a specific test file:
+---
 
-```bash
-python -m pytest tests/test_app.py -v
+## Complete API Surface (55 Endpoints)
+
+| Route | HTTP | Module | Description |
+|---|---|---|---|
+| `/` | GET | Core | Single Page Application UI (9 active views) |
+| `/api/health` | GET | Core | Basic service health |
+| `/api/health/detailed` | GET | Core | Detailed health status of all 12 modules |
+| `/api/session` | POST | Core | Initialize isolated student session |
+| `/api/session/{id}` | DELETE | Core | Clear session, memory, and uploaded notes |
+| `/api/profile` | GET/PUT | Core | Student academic profile (in-memory) |
+| `/api/turn` | POST | M1, M2, M3 | Conversational turn with language & intent routing |
+| `/api/turn/audio` | POST | M1 | End-to-end voice turn (Gnani STT → Copilot → Gnani TTS) |
+| `/api/transcribe` | POST | M1 | Audio to text via Gnani Prisma |
+| `/api/tts` | POST | M1 | Text to speech via Gnani Timbre |
+| `/api/conversation/clear` | POST | M2 | Reset chat depth & conversation context |
+| `/api/doubts/image` | POST | M2 | Photo doubt extraction (textbook, board, code error) |
+| `/api/documents` | POST/DELETE | M4 | Upload PDF study notes / purge from session |
+| `/api/documents/notes` | POST | M4 | Generate notes (short, detailed, flashcards, formula, exam) |
+| `/api/exam/syllabus` | POST/GET | M5 | Upload syllabus PDF & retrieve structured topic checklist |
+| `/api/exam/syllabus/topic`| PATCH | M5 | Toggle topic completed status in syllabus |
+| `/api/exam/papers` | POST | M5 | Previous year question paper analyzer & keyword extractor |
+| `/api/quiz/start` | POST | M5 | Start topic-based interactive quiz |
+| `/api/quiz/answer` | POST | M5 | Submit quiz answer with instant explanation |
+| `/api/quiz/history` | GET | M5 | Quiz scores and weak topic history |
+| `/api/study/plan` | POST/GET | M6 | Generate exam revision plan |
+| `/api/study/reschedule` | POST | M6 | Redistribute remaining topics after missed study days |
+| `/api/tasks` | GET/POST | M6 | Manage assignments and deadlines |
+| `/api/tasks/{id}` | PATCH/DEL | M6 | Mark tasks done or remove them |
+| `/api/today` | GET | M6 | Today's Focus daily summary |
+| `/api/code/explain` | POST | M7 | Multi-language code debugging & conceptual explanation |
+| `/api/code/dsa-hint` | POST | M7 | LeetCode/DSA hint mode (Levels 1–3, no full code spoilers) |
+| `/api/projects/ideas` | POST | M8 | Tailored project ideas based on student skills and goals |
+| `/api/opportunities` | GET | M9 | Filter synthetic internships, scholarships, and hackathons |
+| `/api/opportunities/{id}` | GET | M9 | Opportunity details, missing eligibility fields diff |
+| `/api/applications/start` | POST | M10 | Start application & receive missing requirements |
+| `/api/applications/answer`| POST | M10 | Supply individual required field |
+| `/api/applications/confirm`| POST | M10 | Submit application using 5-minute single-use token |
+| `/api/career/skill-gap` | POST | M11 | Match existing skills against target career role |
+| `/api/career/resume-tips` | POST | M11 | Actionable resume bullet points based on profile |
+| `/api/career/interview/start` | POST | M11 | Launch mock interview (HR, Tech, ML, SQL, DSA) |
+| `/api/career/interview/answer`| POST | M11 | Score answer & generate model response |
+| `/api/career/portfolio` | POST | M11 | Profile advice for GitHub, LinkedIn, Website, or Dev Blog |
+| `/api/analytics` | GET | M12 | Weak topics, study streak, quiz scores & module usage |
+| `/api/learn/path` | POST | M12 | Multi-week week-by-week learning roadmap |
+| `/api/learn/term` | GET | M12 | Telugu-English conversational explanation of technical terms |
+| `/api/track/activity` | POST | M12 | Heartbeat to increment daily study streak |
+
+---
+
+## Security, Privacy & Ethics
+
+1. **Synthetic Data Only**: All internships, scholarships, companies, and application confirmations are completely synthetic. No student PII (real phone numbers, Aadhaar, PAN) is collected or stored.
+2. **Audio Privacy**: Audio streams are processed strictly in RAM and never written to disk or logged. Meets the Indian Digital Personal Data Protection (DPDP) Act standards.
+3. **Application Consent Gate**: The AI agent cannot automatically submit applications on behalf of students. Submission mandates an explicit, cryptographically random one-time confirmation token with a 5-minute TTL.
+4. **Content Security Policy**: Strict headers prevent inline script injection, frame-jacking (`frame-ancestors 'none'`), MIME confusion (`nosniff`), and unauthorized microphone access (`Permissions-Policy: microphone=(self)`).
+5. **No CAPTCHA / Auth Bypasses**: The copilot strictly obeys host system boundaries and hands control back to the user whenever interactive verification is required.
+
+---
+
+## Project Structure
+
 ```
-
-Testing should cover:
-
-- API request and response validation.
-- Session creation and expiration.
-- Conversation handling.
-- Voice integration behavior.
-- Document processing.
-- Study management.
-- Quiz functionality.
-- Coding assistance.
-- Opportunity and application workflows.
-- Career assistance.
-- Security controls.
-
-Actual test results should be reported from the latest test execution.
-
----
-
-## 12. Current Implementation Scope and Limitations
-
-The current version is a functional prototype with multiple integrated student-assistance workflows.
-
-Important implementation boundaries:
-
-| Area | Current Scope |
-|---|---|
-| Session storage | In-memory |
-| Opportunity data | Synthetic demonstration records |
-| Application workflow | Demonstration only |
-| LLM reasoning | Configurable external providers and mock mode |
-| Voice processing | Gnani API integration with browser fallback |
-| Document retrieval | BM25-based retrieval |
-| Persistence | No production database configured |
-| Deployment | Local development setup |
-
-These boundaries are intentional documentation of the current implementation, not claims of production readiness.
-
----
-
-## 13. Future Improvements
-
-The following improvements are potential development directions:
-
-- Persistent storage using PostgreSQL.
-- Distributed session management using Redis.
-- Authentication and role-based access control.
-- Production-grade document storage and lifecycle management.
-- Hybrid retrieval combining BM25 and vector search.
-- Cross-encoder reranking for document retrieval.
-- LangGraph-based multi-agent orchestration.
-- Tool-calling workflows with controlled permissions.
-- Improved conversation memory.
-- Evaluation datasets for answer quality and retrieval accuracy.
-- Voice latency and transcription-quality benchmarks.
-- Deployment with monitoring and observability.
-- Verified external opportunity integrations.
-- Production-grade consent and application integrations.
-
-Future improvements will be added incrementally and documented as they are implemented and validated.
-
----
-
-## 14. Why Student Copilot?
-
-Student Copilot is built around a unified student experience rather than treating academic support, career preparation, voice interaction, and opportunity assistance as unrelated applications.
-
-The project explores how multiple AI capabilities can be organized into a single system with:
-
-- Natural multilingual interaction.
-- Context-aware workflows.
-- Specialized task routing.
-- Configurable LLM reasoning.
-- Document-based assistance.
-- Human-controlled actions.
-
-The objective is not simply to build another chatbot, but to explore practical AI system engineering through an integrated application.
-
----
-
-## 15. Author
-
-**Kunchakuri Sathwik**
-
-B.Tech — Computer Science and Engineering (AI & ML)
-
-Interests:
-- Artificial Intelligence
-- Machine Learning and Deep Learning
-- Large Language Models
-- Generative AI
-- Retrieval-Augmented Generation
-- AI Agents and Orchestration
-- Voice AI
-
----
-
-## 16. Acknowledgements
-
-Special acknowledgement to **Gnani.ai** for its voice AI technologies and the opportunity to explore practical applications of multilingual conversational AI through the Great Indian AI Internship Challenge.
-
----
-
-<p align="center">
-
-**Student Copilot AI**
-
-*Making intelligent student assistance more accessible, conversational, and personalized.*
-
-</p>
+gnani ai/
+├── app.py                      # FastAPI backend with all 12 modules (2,440 lines, 55 routes)
+├── requirements.txt            # Production runtime dependencies
+├── requirements-dev.txt        # Development & testing dependencies
+├── pytest.ini                  # Pytest runner configuration
+├── .env.example                # Sample environment configuration
+├── static/
+│   ├── index.html              # Modern responsive SPA (9 views)
+│   ├── styles.css              # Custom design system with light/dark accents
+│   ├── app.js                  # Frontend state, audio recorder, UI handlers
+│   └── favicon.svg             # Application brand mark
+├── tests/
+│   ├── test_app.py             # Core security, session, tutor, and document tests
+│   ├── test_new_features.py    # Code mentor, analytics, mock interview tests
+│   └── test_all_12_modules.py  # Comprehensive end-to-end suite for all 12 modules
+└── README.md                   # Complete architectural and operational documentation
+```

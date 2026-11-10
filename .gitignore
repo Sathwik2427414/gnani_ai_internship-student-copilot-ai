@@ -1,0 +1,12 @@
+.env
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+smoke_out/
+eval/audio/
+*.wav
+*.mp3
+*.m4a
+*.webm
